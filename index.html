@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>MultiChat</title>
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<style type="text/css">
+			body {
+				font-family: 'Roboto Condensed', sans-serif;
+				overflow-x: hidden;
+				overflow-y: hidden;
+			}
+
+			#friend-header, #chat-header {
+				text-align: center;
+				font-size: 20px;
+				color:white;
+			}
+
+			.friend-list {
+				width: 33.3%;
+				height: 80vh;
+				clear:both;
+				background: #03A9F4;
+				float: left;
+				text-align: center;
+			}
+
+			.chat-system {
+				width:66.6%;
+				background: #03A9F4;
+				float:right;
+				text-align:center;
+				border-left: 1px solid #4FC3F7;
+			}
+
+			.message-history{
+				background: #B0BEC5;
+				overflow-y: auto;
+				height: 77vh;
+				padding-right: 5px;
+				display: flex;
+				flex-direction: column-reverse;
+			}
+
+			#message-text-field{
+				width: 85% !important;
+				float:left;
+				border: none;
+				line-height: 88px;
+				font-size: 20px;
+				padding-left: 15px;
+				outline: none;
+			}
+
+			#send-message-button{
+				width:13% !important;
+				line-height: 85px;
+				float:right;
+				border-radius: 2px;
+				color:white;
+				background-color: #EF5350;
+				outline:none;
+				border-radius: 2px;
+				font-size: 20px;
+			}
+
+			.my-message{
+				float: right;
+				list-style-type: none;
+				clear:both;
+				text-align: right;
+				padding: 15px;
+				border-radius: 5px;
+				margin-bottom: 5px;
+				background: #1DE9B6;
+			}
+
+			.other-message{
+				float:left;
+				list-style-type: none;
+				clear:both;
+				text-align: left;
+				padding: 15px;
+				border-radius: 5px;
+				margin-bottom: 5px;
+				background: #00E5FF;
+			}
+
+			#message-list, #active-user-list{
+				list-style-type: none;
+				list-style: none;
+				margin: 10px;
+				padding: 0;
+				padding-left: none;
+			}
+
+			#active-friend-search{
+				width:100%;
+				line-height: 28px;
+				padding-left: 15px;
+				outline: none;
+			}
+
+			.active-people-container{
+				height: 84vh;
+				background-color: white;
+			}
+
+			#people-list{
+				float: left;
+				clear: both;
+				color: white;
+				width: 100%;
+				outline: none;
+				padding: 15px;
+				font-size: 20px;
+				margin-bottom: 2px;
+				background-color: #3F51B5;
+			}
+
+			button:hover{
+				background-color: #EF5350;
+				cursor: pointer;
+			}
+
+			.active-people-container{
+				overflow-y: auto;
+			}</style>
+		<link rel="shortcut icon" href="#"></head>
+	<body>
+		<div class="friend-list">
+			<h1 id="friend-header">FRIENDS</h1>
+			<input type="text" id="active-friend-search" placeholder="Search for active friends..">
+			<div class="active-people-container">
+				<ul id="active-user-list"></ul>
+			</div></div>
+		<div class="chat-system">
+			<h1 id="chat-header">CHAT</h1>
+			<div class="message-history">
+				<ul id="message-list"></ul>
+			</div>
+			<div id="message-send-container">
+				<input type="text" placeholder="Message" name="message" id="message-text-field" autocomplete="off">
+				<button id="send-message-button">Send</button>
+			</div></div>
+		<script type="text/javascript">
+			var req;
+			var messages = {};
+			var allMessage = JSON.stringify(messages); 
+			var allUsers = ["Amy", "Angela", "Andy", "Ava", "Alice", "Addison", 
+							"Brock", "Bradley", "Carol", "Jack", "Jessica", "Tommy"];
+			var userMessage = document.getElementById("message-text-field");
+			var sendMessageBtn = document.getElementById("send-message-button");
+			var chatHeader = document.getElementById('chat-header');
+			var nameClicked = document.getElementById('active-user-list');
+
+			sendMessageBtn.addEventListener("click", function(e) {
+				sendMessageToHistory();
+				userMessage.focus();
+				e.preventDefault();
+			});
+
+			userMessage.addEventListener('keypress', function(e){
+				if (e.keyCode == 13){
+					sendMessageToHistory();
+					e.preventDefault();
+					userMessage.focus();
+				}
+			});
+
+			nameClicked.addEventListener("click", function(e){
+				if (e.target && e.target.nodeName == "BUTTON"){
+					chatHeader.innerHTML = e.target.innerHTML;
+					userMessage.focus();
+					var changedPerson = document.getElementById('message-list');
+					changedPerson.innerHTML = '';
+					loadMessage();
+				}
+			});
+
+			function sendMessageToHistory(){
+				var ul = document.getElementById("message-list");
+				var entry = document.createElement("li");
+				var currUser = chatHeader.innerHTML;
+
+				entry.appendChild(document.createTextNode(userMessage.value));
+				entry.setAttribute("class", "my-message");
+
+				ul.appendChild(entry);
+				
+				if (messages.hasOwnProperty(currUser)){
+					messages[currUser].push(userMessage.value);
+				} else {
+					messages[currUser] = [];
+					messages[currUser].push(userMessage.value);
+				}
+				
+				allMessage = JSON.stringify(messages);
+				userMessage.value = "";
+			}
+
+			function loadMessage(){
+				var currUser = chatHeader.innerHTML;
+				connectToServer();
+				if (messages.hasOwnProperty(currUser)){
+					for (i = 0; i < messages[currUser].length; i++){
+						var ul = document.getElementById("message-list");
+						var entry = document.createElement("li");
+						entry.appendChild(document.createTextNode(messages[currUser][i]));
+						entry.setAttribute("class", "my-message");
+						ul.appendChild(entry);
+					}
+				}
+			}
+
+			function connectToServer(){
+				var req = new XMLHttpRequest();
+				req.open("POST", "http://10.209.4.98:8080/login.html", true);
+				//req.setRequestHeader("Content-type", "application/json");
+				//req.send(allMessage);
+				// req.onreadystatechange = function(){
+				// 	if (req.readyState == 4 && req.responseText == 200){
+				// 		var jsonObj = JSON.parse(req.responseText);
+				// 	}
+				// }
+
+			}
+
+			function showAllUsers(){
+				userMessage.focus();
+				for (i = 0; i < allUsers.length; i++){
+					var ul = document.getElementById("active-user-list");
+					var person = document.createElement("button");
+					person.appendChild(document.createTextNode(allUsers[i]));
+					person.setAttribute("id", "people-list");
+					ul.appendChild(person);
+				}
+				if (allUsers.length > 0)
+					chatHeader.innerHTML = allUsers[0];
+				loadMessage();
+			}
+
+			window.onload = showAllUsers();
+		</script>
+	</body>
+</html>
