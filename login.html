@@ -4,7 +4,6 @@
 		<title>MutliChat</title>
 		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
 		<link rel="stylesheet" type="text/css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<style type="text/css">
 			body{
 				font-family: 'IBM Plex Mono', monospace;
@@ -33,59 +32,45 @@
 				border-bottom: 2px solid #000;
 				width: 450px;
 			}
-
-			#open-socket-button{
-				border:none;
-				font-size: 15px;
-			}
-		</style>
-		<link rel="shortcut icon" href="#">
+		</style>	
 	</head>
 	<body>
 		<div class="form">
 			<h3 id="info-text">Username</h3>
 			<input id="username-input" type="text" maxlength="20" name="name" autocomplete="off"><br>
-			<button id="open-socket-button">[Register]</button>
 		</div>
-		
 		<script type="text/javascript">
 			var saveUsername = document.getElementById("username-input");
+			var textInfo = document.getElementById("info-text");
+			var username;
+
 			saveUsername.focus();
 
-			var sendButton = document.getElementById("open-socket-button");
-			sendButton.addEventListener("click", function(){
-				window.location = "index.html";
-			});
-
-			var textInfo = document.getElementById("info-text");
 			saveUsername.addEventListener('keypress', function (e) {
-				if (e.keyCode == 13 && textInfo.innerHTML != "Password"){
-					textInfo.innerHTML = "Password";
-					saveUsername.setAttribute("type", "password");
-					saveUsername.value = "";
-				}
-				else if (textInfo.innerHTML == "Password" && e.keyCode == 13){
-					window.location = "index.html";
-					window.history.pushState({}, 'MutliChat', '/index.html');
+				if (e.keyCode == 13){
+					username = saveUsername.value;
+					addUser();
 				}
 			});
 
-			function startServer(){
+			function addUser(){
 				var req = new XMLHttpRequest();
-				req.open("GET", "http://10.209.4.98:8080", true);
-				req.onreadystatechange = handleServerResponse;
-			}
-
-			function handleServerResponse (){
-				
-				if (req.readyState == 4 && req.responseText == 200){
-					var jsonObj = JSON.parse(req.responseText);
-					alert(req.getAllResponseHeaders());
+				req.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status == 200 && req.responseText === "OK"){
+						window.location = "index.html";
+						window.history.pushState({}, 'MutliChat', '/index.html');
+					} else {
+						saveUsername.value = "";
+					}
+				}
+				req.open("POST", "/adduser", true);
+				req.setRequestHeader("Content-Type", "text/html");
+				if (username){
+					req.send(
+						username
+					);
 				}
 			}
-
-			window.onload = startServer();
-
 		</script>
 	</body>
 </html>
