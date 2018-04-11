@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MutliChat</title>
+		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
+		<link rel="stylesheet" type="text/css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<style type="text/css">
+			body{
+				font-family: 'IBM Plex Mono', monospace;
+			}
+
+			.form{
+				position: absolute;
+				width: 100vw;
+				top: 30%;
+				bottom: 50%;
+				text-align: center;
+				font-size: 30px;
+			}
+
+			#info-text{
+				padding:0;
+				margin-bottom: 0;
+			}
+
+			#username-input{
+				border: none;
+				outline: none;
+				font-size: 25px;
+				text-align: center;
+				padding-bottom: 15px;
+				border-bottom: 2px solid #000;
+				width: 450px;
+			}
+
+			#open-socket-button{
+				border:none;
+				font-size: 15px;
+			}
+		</style>
+		<link rel="shortcut icon" href="#">
+	</head>
+	<body>
+		<div class="form">
+			<h3 id="info-text">Username</h3>
+			<input id="username-input" type="text" maxlength="20" name="name" autocomplete="off"><br>
+			<button id="open-socket-button">[Register]</button>
+		</div>
+		
+		<script type="text/javascript">
+			var saveUsername = document.getElementById("username-input");
+			saveUsername.focus();
+
+			var sendButton = document.getElementById("open-socket-button");
+			sendButton.addEventListener("click", function(){
+				window.location = "index.html";
+			});
+
+			var textInfo = document.getElementById("info-text");
+			saveUsername.addEventListener('keypress', function (e) {
+				if (e.keyCode == 13 && textInfo.innerHTML != "Password"){
+					textInfo.innerHTML = "Password";
+					saveUsername.setAttribute("type", "password");
+					saveUsername.value = "";
+				}
+				else if (textInfo.innerHTML == "Password" && e.keyCode == 13){
+					window.location = "index.html";
+					window.history.pushState({}, 'MutliChat', '/index.html');
+				}
+			});
+
+			function startServer(){
+				var req = new XMLHttpRequest();
+				req.open("GET", "http://10.209.4.98:8080", true);
+				req.onreadystatechange = handleServerResponse;
+			}
+
+			function handleServerResponse (){
+				
+				if (req.readyState == 4 && req.responseText == 200){
+					var jsonObj = JSON.parse(req.responseText);
+					alert(req.getAllResponseHeaders());
+				}
+			}
+
+			window.onload = startServer();
+
+		</script>
+	</body>
+</html>
