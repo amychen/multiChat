@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MutliChat</title>
+		<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono" rel="stylesheet">
+		<link rel="stylesheet" type="text/css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<style type="text/css">
+			body{
+				font-family: 'IBM Plex Mono', monospace;
+			}
+
+			.form{
+				position: absolute;
+				width: 100vw;
+				top: 30%;
+				bottom: 50%;
+				text-align: center;
+				font-size: 30px;
+			}
+
+			#info-text{
+				padding:0;
+				margin-bottom: 0;
+			}
+
+			#username-input{
+				border: none;
+				outline: none;
+				font-size: 25px;
+				text-align: center;
+				padding-bottom: 15px;
+				border-bottom: 2px solid #000;
+				width: 450px;
+			}
+		</style>
+		<link rel="shortcut icon" href="#">
+	</head>
+	<body>
+		<div class="form">
+			<h3 id="info-text">Username</h3>
+			<input id="username-input" type="text" maxlength="20" name="name" autocomplete="off"><br>
+		</div>
+		<script type="text/javascript">
+			var saveUsername = document.getElementById("username-input");
+			var textInfo = document.getElementById("info-text");
+			var username;
+
+			saveUsername.focus();
+
+			saveUsername.addEventListener('keypress', function (e) {
+				if (e.keyCode == 13){
+					username = saveUsername.value;
+					addUser();
+				}
+			});
+
+			function addUser(){
+				var req = new XMLHttpRequest();
+				req.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status == 200 && req.responseText === "OK"){
+						window.location = "index.html";
+						window.history.pushState({}, 'MutliChat', '/index.html');
+					} else {
+						saveUsername.value = "";
+					}
+				}
+				req.open("POST", "/adduser", true);
+				req.setRequestHeader("Content-Type", "text/html");
+				if (username){
+					req.send(
+						username
+					);
+				}
+			}
+		</script>
+	</body>
+</html>
