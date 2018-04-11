@@ -1,0 +1,32 @@
+{
+	"myName" : [
+		{
+			"friend1": [
+				{
+					"date": "",
+					"message": ""
+				},
+				{
+					"date": "",
+					"message": ""
+				}
+			]
+		},
+		{
+			"friend2" : [
+				{
+					"date" : "",
+					"message": ""
+				}
+			]
+		},
+		{
+			"friend3" : [
+				{
+					"date" : "",
+					"message" : ""
+				}
+			]
+		}
+	]
+}
