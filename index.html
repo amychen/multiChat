@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<title>MultiChat</title>
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<style type="text/css">
 			body {
 				font-family: 'Roboto Condensed', sans-serif;
@@ -89,7 +90,7 @@
 				padding: 15px;
 				border-radius: 5px;
 				margin-bottom: 5px;
-				background: #00E5FF;
+				background: #00E5FF;=
 				font-size: 25px;
 			}
    
@@ -120,12 +121,10 @@
 				margin: 0;
 				padding: 0;
 			}
-
 			button:hover{
 				background-color: #EF5350;
 				cursor: pointer;
 			}
-
 			</style>	
 	<body>
 		<div class="friend-list">
@@ -154,6 +153,7 @@
 			sendMessageBtn.addEventListener("click", function(e) {
 				userMessage.focus();
 				sendMessageToHistory();
+
 				e.preventDefault();
 			});
 
@@ -284,6 +284,7 @@
 			window.onload = showUserList();
 			setInterval(checkForNewMessage, 500);
 			setInterval(showUserList, 1000);
+				
 		</script>
 	</body>
 </html>
